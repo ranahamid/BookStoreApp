@@ -1,8 +1,14 @@
+using BookStoreApp.API;
+using BookStoreApp.API.Data;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Scaffold-DbContext 'server=.;database=BookStoreDb;integrated security=True' Microsoft.EntityFrameworkCore.SqlServer -ContextDir Data -OutputDir Data 
+var connString = builder.Configuration.GetConnectionString("BookStoreAppDbConnection");
+builder.Services.AddDbContext<BookStoreDbContext>(x => x.UseSqlServer(connString));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -13,7 +19,13 @@ builder.Host.UseSerilog((ctx, lc) =>
     lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration);
 });
 
-
+builder.Services.AddCors(x =>
+{
+    x.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin().
+            AllowAnyMethod().
+            AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -25,6 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
