@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,8 +36,12 @@ namespace BookStoreApp.API.Controllers
              
             try
             {
-                var books = await _context.Books.Include(x=>x.Author).ToListAsync();
-                var bookDtos = _mapper.Map<IEnumerable<BookReadOnlyDto>>(books);
+                //var books = await _context.Books.Include(x=>x.Author).ToListAsync();
+                //var bookDtos = _mapper.Map<IEnumerable<BookReadOnlyDto>>(books);
+
+                var bookDtos = await _context.Books.Include(x => x.Author).ProjectTo<BookReadOnlyDto>(_mapper.ConfigurationProvider).ToListAsync();
+                 
+
                 return Ok(bookDtos);
             }
             catch (Exception ex)
