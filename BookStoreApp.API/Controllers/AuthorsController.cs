@@ -114,8 +114,7 @@ namespace BookStoreApp.API.Controllers
         public async Task<ActionResult<Author>> PostAuthor(AuthorCreateDto authorDto)
         {
             try
-            {
-             
+            { 
                 var author = _mapper.Map<Author>(authorDto);
                 await _context.Authors.AddAsync(author);
                 await _context.SaveChangesAsync();
@@ -126,10 +125,7 @@ namespace BookStoreApp.API.Controllers
             {
                 _logger.LogError(ex, $"Error in performing POST {nameof(PostAuthor)}");
                 return StatusCode(500, Messages.Error500Message);
-            }
-             
-
-          
+            } 
         }
 
         // DELETE: api/Authors/5
