@@ -115,7 +115,7 @@ namespace BookStoreApp.API.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Aud, _configuration["Jwt:Audience"]),
                 new Claim(JwtRegisteredClaimNames.Iss, _configuration["Jwt:Issuer"]),
-                new Claim(CustomClaimTypes.uid, user.Id),
+                new Claim(CustomClaimTypes.Uid, user.Id),
             }.Union(roleClaims).Union(userClaims);
             return claims;
         }
