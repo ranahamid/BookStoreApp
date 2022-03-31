@@ -90,7 +90,37 @@ namespace BookStoreApp.API.Controllers
                 return Problem($"Something went wrong in the {nameof(Login)}", statusCode: 500);
             }
         }
-        public async Task<string> GenerateToken(ApiUser user)
+        //private async Task<string> GenerateToken(ApiUser user)
+        //{
+        //    var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
+        //    var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
+
+        //    var roles = await _userManager.GetRolesAsync(user);
+        //    var roleClaims = roles.Select(q => new Claim(ClaimTypes.Role, q)).ToList();
+
+        //    var userClaims = await _userManager.GetClaimsAsync(user);
+
+        //    var claims = new List<Claim>
+        //        {
+        //            new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+        //            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        //            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        //            new Claim(CustomClaimTypes.Uid, user.Id)
+        //        }
+        //        .Union(userClaims)
+        //        .Union(roleClaims);
+
+        //    var token = new JwtSecurityToken(
+        //        issuer: _configuration["JwtSettings:Issuer"],
+        //        audience: _configuration["JwtSettings:Audience"],
+        //        claims: claims,
+        //        expires: DateTime.UtcNow.AddHours(Convert.ToInt32(_configuration["JwtSettings:Duration"])),
+        //        signingCredentials: credentials
+        //    );
+
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
+        private async Task<string> GenerateToken(ApiUser user)
         {
 
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
@@ -113,8 +143,8 @@ namespace BookStoreApp.API.Controllers
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim("fullName", user.FirstName + " " + user.LastName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Aud, _configuration["Jwt:Audience"]),
-                new Claim(JwtRegisteredClaimNames.Iss, _configuration["Jwt:Issuer"]),
+                new Claim(JwtRegisteredClaimNames.Aud, _configuration["JwtSettings:Audience"]),
+                new Claim(JwtRegisteredClaimNames.Iss, _configuration["JwtSettings:Issuer"]),
                 new Claim(CustomClaimTypes.Uid, user.Id),
             }.Union(roleClaims).Union(userClaims);
             return claims;
@@ -129,8 +159,8 @@ namespace BookStoreApp.API.Controllers
                 var expiration = DateTime.Now.AddHours(expHrs);
                 token = new JwtSecurityToken
                 (
-                    issuer: _configuration["Jwt:Issuer"],
-                    audience: _configuration["Jwt:Audience"],
+                    issuer: _configuration["JwtSettings:Issuer"],
+                    audience: _configuration["JwtSettings:Audience"],
                     claims: claims,
                     expires: expiration,
                     signingCredentials: signingCredentials);
