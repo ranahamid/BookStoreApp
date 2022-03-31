@@ -31,7 +31,7 @@ builder.Host.UseSerilog((ctx, lc) =>
 builder.Services.AddCors(x =>
 {
     x.AddPolicy("AllowAll",
-        builder => builder.AllowAnyOrigin().
+        x => x.AllowAnyOrigin().
             AllowAnyMethod().
             AllowAnyHeader());
 });
