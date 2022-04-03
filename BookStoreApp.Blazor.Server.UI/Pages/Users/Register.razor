@@ -1,6 +1,14 @@
 ﻿@page "/users/register"
+@inject IClient httpClient
+@inject NavigationManager _navigationManager
 <h3>Register</h3>
 
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-danger">
+        <p>@message</p>
+    </div>
+}
 <h3>Register New Account</h3>
 <div class="card-body">
     <EditForm Model="RegistrationModel" OnSubmit="HandleRegistration" >
@@ -34,11 +42,37 @@
 </div>
 
 @code {
-    UserDto RegistrationModel = new UserDto();
-
-    private async Task HandleRegistration()
+    UserDto RegistrationModel = new UserDto
     {
-        RegistrationModel.Role = "User";
+        Role = "User"
+    };
+     
+    string message = string.Empty;
+    private async Task HandleRegistration()
+    { 
+        try
+        {
+            await httpClient.RegisterAsync(RegistrationModel);
+          
+            NavigateToLogin();
+        }
+        catch (ApiException ex )
+        {
+            if (ex.StatusCode >= 200 && ex.StatusCode <= 299)
+            { 
+                NavigateToLogin();
+                
+            }
+            message = ex.Response;
+        }
+        catch (Exception ex)
+        {
+            message = $"General exceptions: {ex.Message}";
+        }
+    }
 
+    private void NavigateToLogin()
+    {
+        _navigationManager.NavigateTo("/users/login");
     }
 }

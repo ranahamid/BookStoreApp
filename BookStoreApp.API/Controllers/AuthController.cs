@@ -51,7 +51,7 @@ namespace BookStoreApp.API.Controllers
                 }
 
                 await _userManager.AddToRoleAsync(user, "User");
-                return Accepted();
+                return Ok();
 
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace BookStoreApp.API.Controllers
         }
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login(LoginUserDto userDto)
+        public async Task<ActionResult<AuthResponse>> Login(LoginUserDto userDto)
         {
             _logger.LogInformation($"Login attempt in {nameof(Login)} for {userDto.Email}");
             try
@@ -82,7 +82,7 @@ namespace BookStoreApp.API.Controllers
                     Token = token,
                     UserId = user.Id
                 };
-                return Accepted(response);
+                return response;
             }
             catch (Exception ex)
             {
