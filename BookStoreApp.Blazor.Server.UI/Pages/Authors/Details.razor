@@ -25,6 +25,9 @@
             <ValidationMessage For="@(()=> Author.Bio)"></ValidationMessage>
         </div> 
     </fieldset> 
+
+   
+
 </EditForm>
 
 @if(Author.Books==null || Author.Books.Any() == false)
@@ -46,6 +49,16 @@ else{
         </div>
     }
 }
+
+  <button @onclick="GoToEdit" class="btn btn-warning">
+        <span class="oi oi-pencil"></span>
+        Edit Author
+    </button>
+
+    <button @onclick="BackToAuthorList" class="btn btn-outline-secondary">
+        <span class="oi oi-media-skip-backward"></span>
+        Back To List
+    </button>
 
 
 @code {
