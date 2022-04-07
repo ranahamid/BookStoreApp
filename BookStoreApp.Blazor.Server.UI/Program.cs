@@ -1,5 +1,4 @@
-using Blazored.LocalStorage;
-using BookStoreApp.Blazor.Server.UI.Data;
+using Blazored.LocalStorage; 
 using BookStoreApp.Blazor.Server.UI.Providers;
 using BookStoreApp.Blazor.Server.UI.Services.Authentication;
 using BookStoreApp.Blazor.Server.UI.Services.Base;
@@ -13,8 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazoredLocalStorage();
-
-builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddHttpClient<IClient,Client>(x => x.BaseAddress = new Uri("https://localhost:7025"));
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
