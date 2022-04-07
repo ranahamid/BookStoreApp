@@ -46,7 +46,7 @@ namespace BookStoreApp.Blazor.Server.UI.Services
 
         public async Task<Response<int>> Edit(int id, AuthorUpdateDto author)
         {
-            Response<int> response = new Response<int>();
+            Response<int> response = new();
             try
             {
                 await GetBearerToken();
@@ -101,14 +101,15 @@ namespace BookStoreApp.Blazor.Server.UI.Services
 
         public async  Task<Response<AuthorUpdateDto>> GetForUpdate(int id)
         { 
-            Response<AuthorUpdateDto> response = new Response<AuthorUpdateDto>();
+            Response<AuthorUpdateDto> response ;
             try
             {
                 await GetBearerToken();
                 var data = await _client.AuthorsGETAsync(id);
+                var mapResult = _mapper.Map<AuthorUpdateDto>(data);
                 response = new Response<AuthorUpdateDto>
                 {
-                    Data = _mapper.Map<AuthorUpdateDto>(data),
+                    Data = mapResult,
                     Success = true
                 };
             }
