@@ -106,14 +106,14 @@ namespace BookStoreApp.Blazor.Server.UI.Services
             {
                 await GetBearerToken();
                 var data = await _client.AuthorsGETAsync(id);
-                //var mapResult = _mapper.Map<AuthorUpdateDto>(data);
-                AuthorUpdateDto mapResult = new AuthorUpdateDto
-                {
-                    Id = data.Id,
-                    Bio = data.Bio,
-                    FirstName = data.FirstName,
-                    LastName = data.LastName,
-                };
+                var mapResult = _mapper.Map<AuthorUpdateDto>(data);
+                //AuthorUpdateDto mapResult = new AuthorUpdateDto
+                //{
+                //    Id = data.Id,
+                //    Bio = data.Bio,
+                //    FirstName = data.FirstName,
+                //    LastName = data.LastName,
+                //};
                 response = new Response<AuthorUpdateDto>
                 {
                     Data = mapResult,
