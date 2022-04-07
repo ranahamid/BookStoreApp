@@ -1,0 +1,74 @@
+﻿@page "/authors/Details/{id:int}"
+
+@inject IAuthorService authorService
+@inject NavigationManager _navigationManager
+<h3>Author Details</h3>
+
+<EditForm Model="Author" >
+  
+    <fieldset disabled="true">
+        <div class="form-group">
+            <label for="email">First Name</label>
+            <InputText class="form-control" @bind-Value="Author.FirstName"/>
+            <ValidationMessage For="@(()=> Author.FirstName)"></ValidationMessage>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Last Name</label>
+            <InputText class="form-control" @bind-Value="Author.LastName"/>
+            <ValidationMessage For="@(()=> Author.LastName)"></ValidationMessage>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Biography</label>
+            <InputText class="form-control" @bind-Value="Author.Bio"/>
+            <ValidationMessage For="@(()=> Author.Bio)"></ValidationMessage>
+        </div> 
+    </fieldset> 
+</EditForm>
+
+@if(Author.Books==null || Author.Books.Any() == false)
+{
+      <div class="alert alert-dismissible alert-secondary">
+        <h4>No books for this author</h4>
+    </div>
+}
+else{
+    @foreach(var book in Author.Books)
+    {
+        <div class="card" style="width:18rem;">
+            <img src="@book.Image" class="card-img-top" alt="@book.Title"/>
+            <div class="card-body">
+                <h5 class="card-title">@book.Title- @book.Price.ToString("C")</h5>
+                <p class="card-text"></p>
+                <a href="#" class="btn btn-primary">View Book</a>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public int id{ get; set; }
+    private AuthorDetailsDto Author = new AuthorDetailsDto();
+
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await authorService.Get(id);
+        if (response.Success)
+        {
+            Author = response.Data;
+        }
+    }
+
+    private void BackToAuthorList()
+    {
+       _navigationManager.NavigateTo("/authors");
+    }
+
+      private void GoToEdit()
+    {
+       _navigationManager.NavigateTo($"/authors/update/{Author.Id}");
+    }
+}

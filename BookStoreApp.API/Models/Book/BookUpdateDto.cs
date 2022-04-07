@@ -7,13 +7,13 @@ namespace BookStoreApp.API.Models.Book
         [Required]
         public string? Title { get; set; }
         [Range(0, int.MaxValue)]
-        public int? Year { get; set; }
+        public int Year { get; set; }
         public string? Isbn { get; set; }
         [StringLength(250, MinimumLength = 10)]
         public string? Summary { get; set; }
         public string? Image { get; set; }
         [Required]
         [Range(0, int.MaxValue)]
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
     }
 }
