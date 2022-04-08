@@ -23,7 +23,7 @@
 
         <div class="form-group">
             <label for="email">Biography</label>
-            <InputText class="form-control" @bind-Value="Author.Bio"/>
+            <InputTextArea class="form-control" @bind-Value="Author.Bio"/>
             <ValidationMessage For="@(()=> Author.Bio)"></ValidationMessage>
         </div>
 
