@@ -20,7 +20,7 @@ namespace BookStoreApp.Blazor.WebAssembly.UI.Providers
             var savedToken = await GetToken();
             if (string.IsNullOrEmpty(savedToken))
             {
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                return new AuthenticationState(user);
             } 
             var tokenContent = await GetSecurityToken(savedToken);
             if (tokenContent.ValidTo < DateTime.Now)
