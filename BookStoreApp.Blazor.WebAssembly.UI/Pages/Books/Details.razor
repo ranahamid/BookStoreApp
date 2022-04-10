@@ -1,0 +1,98 @@
+﻿@page "/books/Details/{id:int}"
+
+@inject IBookService BookService
+@inject NavigationManager _navigationManager
+<h3>Book Details</h3>
+
+<EditForm Model="Book">
+
+    <fieldset disabled="true">
+
+        
+        <div class="form-group">
+            <label for="">Book Cover Photo</label>
+         <div>
+             <img src="@Book.Image" width="100" height="100" class="img-thumbnail" />
+        </div>
+        </div>
+
+
+        <div class="form-group">
+            <label for="Title">Title</label>
+            <InputText class="form-control" @bind-Value="Book.Title" />
+            <ValidationMessage For="@(()=> Book.Title)"></ValidationMessage>
+        </div>
+
+             <div class="form-group">
+            <label for="AuthorName">Author Name</label>
+            <InputText class="form-control" @bind-Value="Book.AuthorName" />
+            <ValidationMessage For="@(()=> Book.AuthorName)"></ValidationMessage>
+        </div>
+
+        <div class="form-group">
+            <label for="Year">Year</label>
+            <InputNumber class="form-control" @bind-Value="Book.Year" />
+            <ValidationMessage For="@(()=> Book.Year)"></ValidationMessage>
+        </div>
+
+        <div class="form-group">
+            <label for="Isbn">Isbn</label>
+            <InputText class="form-control" @bind-Value="Book.Isbn" />
+            <ValidationMessage For="@(()=> Book.Isbn)"></ValidationMessage>
+        </div>
+         
+        <div class="form-group">
+            <label for="Summary">Summary</label>
+            <InputTextArea class="form-control" @bind-Value="Book.Summary" />
+            <ValidationMessage For="@(()=> Book.Summary)"></ValidationMessage>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Price</label>
+            <InputNumber class="form-control" @bind-Value="Book.Price" />
+            <ValidationMessage For="@(()=> Book.Price)"></ValidationMessage>
+        </div>
+
+
+    </fieldset>
+
+
+
+</EditForm>
+ 
+
+<button @onclick="GoToEdit" class="btn btn-warning">
+    <span class="oi oi-pencil"></span>
+    Edit Book
+</button>
+
+<button @onclick="BackToBookList" class="btn btn-outline-secondary">
+    <span class="oi oi-media-skip-backward"></span>
+    Back To List
+</button>
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    private BookDetailsDto Book = new BookDetailsDto();
+
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await BookService.Get(id);
+        if (response.Success)
+        {
+            Book = response.Data;
+        }
+    }
+
+    private void BackToBookList()
+    {
+        _navigationManager.NavigateTo("/Books/");
+    }
+
+    private void GoToEdit()
+    {
+        _navigationManager.NavigateTo($"/Books/update/{Book.Id}");
+    }
+}

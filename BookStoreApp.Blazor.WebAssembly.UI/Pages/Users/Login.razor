@@ -1,0 +1,73 @@
+﻿@page "/users/login"
+
+@inject IAuthenticationService authenticationService
+@inject NavigationManager _navigationManager
+
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-danger">
+        <p>@message</p>
+    </div>
+}
+<h3>Login</h3>
+<div class="card-body">
+    <EditForm Model="LoginModel" OnSubmit="HandleLogin" >
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+      
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <InputText class="form-control" @bind-Value="LoginModel.Email"/>
+            <ValidationMessage For="@(()=> LoginModel.Email)"></ValidationMessage>
+        </div>
+        <div class="form-group">
+            <label for="email">Password</label>
+            <InputText type="password" class="form-control" @bind-Value="LoginModel.Password"/>
+            <ValidationMessage For="@(()=> LoginModel.Password )"></ValidationMessage>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-danger">Login</button>
+
+    </EditForm>
+</div>
+
+@code {
+    LoginUserDto LoginModel = new LoginUserDto
+    {
+       
+    };
+     
+    string message = string.Empty;
+    private async Task HandleLogin()
+    { 
+        try
+        {
+           // await httpClient.LoginAsync(LoginModel); 
+            var response = await authenticationService.AuthenticateAsync(LoginModel);
+            if (response)
+            {
+                NavigateToHome();
+            }
+            message = "Invalid credentials. Please try again.";
+        }
+        catch (ApiException ex )
+        {
+            if (ex.StatusCode >= 200 && ex.StatusCode <= 299)
+            { 
+                NavigateToHome();
+                
+            }
+            message = ex.Response;
+        }
+        catch (Exception ex)
+        {
+            message = $"General exceptions: {ex.Message}";
+        }
+    }
+
+    private void NavigateToHome()
+    {
+        _navigationManager.NavigateTo("/");
+    }
+}
