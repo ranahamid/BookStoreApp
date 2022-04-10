@@ -20,11 +20,11 @@ else
     }
     else
     {
-        <AuthorizeView  Roles="Administrator">
+        <AuthorizeView Roles="Administrator">
             <a class="btn btn-dark" href="/authors/create"><span class="oi oi-plus"></span> Create</a>
         </AuthorizeView>
         <br />
-        <table>
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <td>First Name</td>
@@ -33,17 +33,17 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach(var author in Authors)
+                @foreach (var author in Authors)
                 {
                     <tr>
                         <td>@author.FirstName</td>
                         <td>@author.LastName</td>
                         <td>
-                                <a class="btn btn-primary" href="/authors/details/@author.Id"><span class="oi oi-book"></span> Details</a>
-                                <AuthorizeView>
-                                     <a class="btn btn-warning" href="/authors/update/@author.Id"><span class="oi oi-book"></span> Edit</a>
-                                       <a class="btn btn-danger" @onclick=@(()=>Delete(@author.Id))><span class="oi oi-book"></span> Delete</a>
-                                </AuthorizeView>
+                            <a class="btn btn-primary" href="/authors/details/@author.Id"><span class="oi oi-book"></span> Details</a>
+                            <AuthorizeView>
+                                <a class="btn btn-warning" href="/authors/update/@author.Id"><span class="oi oi-book"></span> Edit</a>
+                                <a class="btn btn-danger" @onclick=@(()=>Delete(@author.Id))><span class="oi oi-book"></span> Delete</a>
+                            </AuthorizeView>
                         </td>
                     </tr>
                 }

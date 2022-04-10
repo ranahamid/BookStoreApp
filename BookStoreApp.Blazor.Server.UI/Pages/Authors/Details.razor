@@ -8,19 +8,19 @@
   
     <fieldset disabled="true">
         <div class="form-group">
-            <label for="email">First Name</label>
+            <label for="FirstName">First Name</label>
             <InputText class="form-control" @bind-Value="Author.FirstName"/>
             <ValidationMessage For="@(()=> Author.FirstName)"></ValidationMessage>
         </div>
         
         <div class="form-group">
-            <label for="email">Last Name</label>
+            <label for="LastName">Last Name</label>
             <InputText class="form-control" @bind-Value="Author.LastName"/>
             <ValidationMessage For="@(()=> Author.LastName)"></ValidationMessage>
         </div>
 
         <div class="form-group">
-            <label for="email">Biography</label>
+            <label for="Bio">Biography</label>
             <InputTextArea class="form-control" @bind-Value="Author.Bio"/>
             <ValidationMessage For="@(()=> Author.Bio)"></ValidationMessage>
         </div> 
