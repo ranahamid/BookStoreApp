@@ -1,0 +1,69 @@
+﻿@using BookStoreApp.Blazor.Server.UI.Models
+@inject IAuthorService authorService
+@inject IJSRuntime js
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <td></td>
+            <td>Title</td>
+            <td>Price</td>
+            <td>Author Name</td>
+            <td>Action</td>
+        </tr>
+    </thead>
+    <tbody>
+        <Virtualize ItemsProvider="LoadBooks" Context="book">
+
+            <tr>
+                <td>
+                    <img src="@book.Image" height="50" width="50" />
+                </td>
+                <td>@book.Title</td>
+                <td>@book.Price.ToString("C")</td>
+                <td>
+                    <a class="btn btn-link" href="/authors/details/@book.AuthorId">@book.AuthorName</a>
+                </td>
+                <td>
+                    <a class="btn btn-primary" href="/Books/details/@book.Id"><span class="oi oi-book"></span> Details</a>
+                    <AuthorizeView>
+                        <a class="btn btn-warning" href="/Books/update/@book.Id"><span class="oi oi-book"></span> Edit</a>
+                        <a class="btn btn-danger" @onclick=@(()=>Delete(@book.Id))><span class="oi oi-book"></span> Delete</a>
+                    </AuthorizeView>
+                </td>
+            </tr>
+        </Virtualize>
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<BookReadOnlyDto> Books { get; set; }
+
+    [Parameter]
+    public int TotalSize { get; set; }
+
+    [Parameter]
+    public EventCallback<QueryParameters> OnScroll { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnDeleted { get; set; }
+
+    private async ValueTask<ItemsProviderResult<BookReadOnlyDto>> LoadBooks(ItemsProviderRequest request)
+    {
+        var bookNum = Math.Min(request.Count, TotalSize - request.StartIndex);
+        await OnScroll.InvokeAsync(new QueryParameters
+            {
+                StartIndex = request.StartIndex,
+                PageSize = bookNum  == 0 ? request.Count : bookNum 
+            });
+        return new ItemsProviderResult<BookReadOnlyDto>(Books, TotalSize);
+    }
+
+    private async ValueTask<ItemsProviderResult<int>> Delete(int bookId)
+    { 
+        await OnDeleted.InvokeAsync(bookId);
+        return new ItemsProviderResult<int>(null, bookId);
+    }
+}

@@ -1,4 +1,5 @@
 ﻿@page "/books/"
+@using BookStoreApp.Blazor.WebAssembly.UI.Models
 
 @inject IBookService BookService
 @inject IJSRuntime js
@@ -24,69 +25,50 @@ else
             <a class="btn btn-dark" href="/Books/create"><span class="oi oi-plus"></span> Create</a>
         </AuthorizeView>
         <br />
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <td></td>
-                    <td>Title</td>
-                    <td>Price</td>
-                    <td>Author Name</td>
-                    <td>Action</td>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var Book in Books)
-                {
-                    <tr>
-                        <td>
-                            <img src="@Book.Image" height="50" width="50" />
-                        </td>
-                        <td>@Book.Title</td>
-                        <td>@Book.Price.ToString("C")</td>
-                        <td>
-                            <a class="btn btn-link" href="/authors/details/@Book.AuthorId">@Book.AuthorName</a>
-                        </td>
-                        <td>
-                            <a class="btn btn-primary" href="/Books/details/@Book.Id"><span class="oi oi-book"></span> Details</a>
-                            <AuthorizeView>
-                                <a class="btn btn-warning" href="/Books/update/@Book.Id"><span class="oi oi-book"></span> Edit</a>
-                                <a class="btn btn-danger" @onclick=@(()=>Delete(@Book.Id))><span class="oi oi-book"></span> Delete</a>
-                            </AuthorizeView>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+       <BookTable Books="Books" TotalSize="TotalSize" OnScroll="LoadBooks" OnDeleted="Delete">
+
+       </BookTable>
     }
 }
 
 
-@code {
-    private List<BookReadOnlyDto> Books = new List<BookReadOnlyDto>();
-    private Response<List<BookReadOnlyDto>> response = new Response<List<BookReadOnlyDto>>
-    {
-       Success = true
-    };
+@code { 
+
+     private List<BookReadOnlyDto> Books;
+    public int TotalSize{ get; set; }
+    private Response<BookReadOnlyDtoVirtualizeResponse> response = new Response<BookReadOnlyDtoVirtualizeResponse> { Success = true };
+ 
 
     protected override async Task OnInitializedAsync()
     {
-        response = await BookService.Get();
+        response = await BookService.Get( new QueryParameters {StartIndex=0 });
         if (response.Success)
         {
-            Books = response.Data;
+            Books = response.Data.Items.ToList();
         }
     }
-    private async Task Delete(int BookId)
+
+    private async Task LoadBooks(QueryParameters queryParams)
     {
-        var Book = Books.First(x => x.Id == BookId);
-        var confirm = await js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {Book.Title} {Book.Price}");
+        var virtualizeResult = await BookService.Get(queryParams);
+        Books = virtualizeResult.Data.Items.ToList();
+        TotalSize = virtualizeResult.Data.TotalSize;
+    }
+
+
+    private async Task Delete(int bookId)
+    {
+        var book = Books.First(q => q.Id == bookId);
+        var confirm = await js.InvokeAsync<bool>("confirm", $"Are You Sure You Want To Delete {book.Title}?");
         if (confirm)
         {
-            var response = await BookService.Delete(BookId);
+            var response = await BookService.Delete(bookId);
             if (response.Success)
             {
                 await OnInitializedAsync();
             }
         }
     }
+
+
 }
