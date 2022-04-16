@@ -1,8 +1,8 @@
-﻿namespace BookStoreApp.API.Models
+﻿namespace BookStoreApp.Blazor.Server.UI.Models
 {
     public class QueryParameters
     {
-        private int _pageSize=2;
+        private int _pageSize = 2;
         public int StartIndex { get; set; }
         public int PageSize
         {

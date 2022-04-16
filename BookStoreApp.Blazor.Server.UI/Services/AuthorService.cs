@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Blazored.LocalStorage;
+using BookStoreApp.Blazor.Server.UI.Models;
 using BookStoreApp.Blazor.Server.UI.Services.Base;
 
 namespace BookStoreApp.Blazor.Server.UI.Services
@@ -9,14 +10,14 @@ namespace BookStoreApp.Blazor.Server.UI.Services
         private readonly IClient _client;
         private readonly IMapper _mapper;
 
-        public AuthorService(IClient client, ILocalStorageService localStorageService, IMapper mapper):base(client, localStorageService)
+        public AuthorService(IClient client, ILocalStorageService localStorageService, IMapper mapper) : base(client, localStorageService)
         {
             _client = client;
             _mapper = mapper;
         }
         public async Task<Response<int>> Create(AuthorCreateDto author)
         {
-           Response<int> response = new Response<int>();
+            Response<int> response = new Response<int>();
             try
             {
                 await GetBearerToken();
@@ -24,7 +25,7 @@ namespace BookStoreApp.Blazor.Server.UI.Services
             }
             catch (ApiException ex)
             {
-                response= ConvertApiExceptions<int>(ex);
+                response = ConvertApiExceptions<int>(ex);
             }
             return response;
         }
@@ -58,14 +59,34 @@ namespace BookStoreApp.Blazor.Server.UI.Services
             }
             return response;
         }
+        public async Task<Response<AuthorReadOnlyDtoVirtualizeResponse>> Get(QueryParameters queryParams)
+        {
+            Response<AuthorReadOnlyDtoVirtualizeResponse> response;
 
-        public async  Task<Response<List<AuthorReadOnlyDto>>> Get()
+            try
+            {
+                await GetBearerToken();
+                var data = await _client.AuthorsGETAsync(queryParams.StartIndex, queryParams.PageSize);
+                response = new Response<AuthorReadOnlyDtoVirtualizeResponse>
+                {
+                    Data = data,
+                    Success = true
+                };
+            }
+            catch (ApiException exception)
+            {
+                response = ConvertApiExceptions<AuthorReadOnlyDtoVirtualizeResponse>(exception);
+            }
+
+            return response;
+        }
+        public async Task<Response<List<AuthorReadOnlyDto>>> Get()
         {
             var response = new Response<List<AuthorReadOnlyDto>>();
             try
             {
                 await GetBearerToken();
-                var data = await _client.AuthorsAllAsync();
+                var data = await _client.AuthorsGetAllAsync();
                 response = new Response<List<AuthorReadOnlyDto>>
                 {
                     Data = data.ToList(),
@@ -79,13 +100,13 @@ namespace BookStoreApp.Blazor.Server.UI.Services
             return response;
         }
 
-        public async  Task<Response<AuthorDetailsDto>> Get(int id)
+        public async Task<Response<AuthorDetailsDto>> Get(int id)
         {
             Response<AuthorDetailsDto> response;
             try
             {
                 await GetBearerToken();
-                var data= await _client.AuthorsGETAsync(id);
+                var data = await _client.AuthorsGET2Async(id);
                 response = new Response<AuthorDetailsDto>
                 {
                     Data = data,
@@ -99,14 +120,14 @@ namespace BookStoreApp.Blazor.Server.UI.Services
             return response;
         }
 
-        public async  Task<Response<AuthorUpdateDto>> GetForUpdate(int id)
-        { 
-            Response<AuthorUpdateDto> response ;
+        public async Task<Response<AuthorUpdateDto>> GetForUpdate(int id)
+        {
+            Response<AuthorUpdateDto> response;
             try
             {
                 await GetBearerToken();
-                var data = await _client.AuthorsGETAsync(id);
-                var mapResult = _mapper.Map<AuthorUpdateDto>(data); 
+                var data = await _client.AuthorsGET2Async(id);
+                var mapResult = _mapper.Map<AuthorUpdateDto>(data);
                 response = new Response<AuthorUpdateDto>
                 {
                     Data = mapResult,
@@ -119,5 +140,5 @@ namespace BookStoreApp.Blazor.Server.UI.Services
             }
             return response;
         }
-    } 
+    }
 }

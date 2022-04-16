@@ -1,11 +1,14 @@
-﻿using BookStoreApp.Blazor.WebAssembly.UI.Services.Base;
+﻿using BookStoreApp.Blazor.WebAssembly.UI.Models;
+using BookStoreApp.Blazor.WebAssembly.UI.Services.Base;
 
 namespace BookStoreApp.Blazor.WebAssembly.UI.Services
 {
     public interface IAuthorService
     {
+        Task<Response<AuthorReadOnlyDtoVirtualizeResponse>> Get(QueryParameters queryParams);
         Task<Response<List<AuthorReadOnlyDto>>> Get();
         Task<Response<AuthorDetailsDto>> Get(int id);
+
 
         Task<Response<int>> Create(AuthorCreateDto author);
 

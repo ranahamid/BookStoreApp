@@ -38,9 +38,8 @@ namespace BookStoreApp.API.Controllers
 
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<VirtualizeResponse<BookReadOnlyDto>>> GetBooks(QueryParameters queryParameters)
-        {
-             
+        public async Task<ActionResult<VirtualizeResponse<BookReadOnlyDto>>> GetBooks([FromQuery] QueryParameters queryParameters)
+        { 
             try
             { 
                 var bookDtos = await _bookRepository.GetAllAsync<BookReadOnlyDto>(queryParameters);
@@ -51,6 +50,12 @@ namespace BookStoreApp.API.Controllers
                 _logger.LogError(ex, $"Error in performing GET {nameof(GetBooks)}");
                 return StatusCode(500, Messages.Error500Message);
             }
+        }
+        [HttpGet("BooksGetAll")]
+        public async Task<ActionResult<IEnumerable<BookReadOnlyDto>>> GetAllBooks()
+        {
+            var bookDtos = await _bookRepository.GetAllBooksAsync();
+            return Ok(bookDtos);
         }
 
         // GET: api/Books/5

@@ -1,4 +1,5 @@
-﻿@page "/authors/"
+﻿@page "/authors/" 
+@using BookStoreApp.Blazor.Server.UI.Models
 
 @inject IAuthorService authorService
 @inject IJSRuntime js
@@ -24,59 +25,42 @@ else
             <a class="btn btn-dark" href="/authors/create"><span class="oi oi-plus"></span> Create</a>
         </AuthorizeView>
         <br />
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <td>First Name</td>
-                    <td>Last Name</td>
-                    <td>Action</td>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var author in Authors)
-                {
-                    <tr>
-                        <td>@author.FirstName</td>
-                        <td>@author.LastName</td>
-                        <td>
-                            <a class="btn btn-primary" href="/authors/details/@author.Id"><span class="oi oi-book"></span> Details</a>
-                            <AuthorizeView>
-                                <a class="btn btn-warning" href="/authors/update/@author.Id"><span class="oi oi-book"></span> Edit</a>
-                                <a class="btn btn-danger" @onclick=@(()=>Delete(@author.Id))><span class="oi oi-book"></span> Delete</a>
-                            </AuthorizeView>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+       <AuthorTable Authors="Authors" TotalSize="TotalSize" OnScroll="LoadAuthors" OnDeleted="Delete">
+
+       </AuthorTable>
     }
-}
+} 
 @code {
     private List<AuthorReadOnlyDto> Authors;
-    private Response<List<AuthorReadOnlyDto>> response = new Response<List<AuthorReadOnlyDto>>
-        {
-            Success = true
-        };
+    public int TotalSize{ get; set; }
+    private Response<AuthorReadOnlyDtoVirtualizeResponse> response = new Response<AuthorReadOnlyDtoVirtualizeResponse> { Success = true };
+
+    protected Virtualize<AuthorTable> ChildComponent;
 
     protected override async Task OnInitializedAsync()
     {
-        response = await authorService.Get();
+        response = await authorService.Get( new QueryParameters {StartIndex=0 });
         if (response.Success)
         {
-            Authors = response.Data;
+            Authors = response.Data.Items.ToList();
         }
     }
+
+    private async Task LoadAuthors(QueryParameters queryParams)
+    {
+        var virtualizeResult = await authorService.Get(queryParams);
+        Authors = virtualizeResult.Data.Items.ToList();
+        TotalSize = virtualizeResult.Data.TotalSize;
+    }
+
+
     private async Task Delete(int authorId)
     {
-        var author = Authors.First(x => x.Id == authorId);
-        var confirm = await js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {author.FirstName} {author.LastName}");
-        if (confirm)
+        var author = await authorService.Delete(authorId);
+        if (response.Success)
         {
-            var response = await authorService.Delete(authorId);
-            if (response.Success)
-            {
-                await OnInitializedAsync();
-            }
+            await ChildComponent?.RefreshDataAsync();
+            StateHasChanged();
         }
     }
 }

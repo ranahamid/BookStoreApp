@@ -12,11 +12,10 @@ namespace BookStoreApp.API.Repositories
         Task DeleteAsync(int id);
        
         Task<bool> Exists(int id);
-
+        Task<List<T>> GetAllAsync();
         Task<VirtualizeResponse<TResult>> GetAllAsync<TResult>(QueryParameters queryParameters) where TResult:class ;
          
-        Task<T> GetAsync(int? id);
-        Task InsertRange(IEnumerable<T> entity);
+        Task<T> GetAsync(int? id); 
 
         Task UpdateAsync(T entity);
     }

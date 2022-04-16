@@ -40,6 +40,10 @@ namespace BookStoreApp.API.Repositories
             var entity = await GetAsync(id);
             return entity != null;             
         }
+        public async Task<List<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
 
         public async Task<VirtualizeResponse<TResult>> GetAllAsync<TResult>(QueryParameters queryParameters) where TResult : class
         {
@@ -60,11 +64,7 @@ namespace BookStoreApp.API.Repositories
             }
             return await _context.Set<T>().FindAsync(id);
         }
-
-        public Task InsertRange(IEnumerable<T> entity)
-        {
-            throw new NotImplementedException();
-        }
+         
 
         public async Task UpdateAsync(T entity)
         {
