@@ -1,7 +1,6 @@
 ﻿@page "/authors/create"
 
-@inject IAuthorService authorService
-@inject NavigationManager _navigationManager
+
 @attribute [Authorize(Roles =Roles.Administrator)]
 
 <h3>Create New Author</h3>
@@ -31,19 +30,3 @@
             <button type="button" @onclick="BackToAuthorList" class="btn btn-primary btn-danger"><span class="oi oi-media-skip-backward"></span> Back</button>
 
 </EditForm>
-
-@code {
-    private AuthorCreateDto Author = new AuthorCreateDto();
-    private async Task HandleCreateAuthor()
-    {
-        var response =await  authorService.Create(author: Author);
-       // if (response.Success)
-        {
-            BackToAuthorList();
-        }
-    } 
-    private void BackToAuthorList()
-    {
-        _navigationManager.NavigateTo("/authors/");
-    }
-}
